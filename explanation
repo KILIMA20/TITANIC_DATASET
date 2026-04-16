@@ -1,2 +1,98 @@
+DATA PREPROCESSING
+#importing the libraries used for data loading and cleaning(pandas) and numerical maniulation(numpy)
 import pandas as pd
 import numpy as np
+
+#load the data and display the first and the last values
+df=pd.read_csv("titanic.csv")
+df.head()
+df.tail()
+
+#the umber of rows and columns the dataset has and displaying all the columns
+df.shape
+df.columns
+
+#finding missing values and fiiling them in with the mean or dropping them completely
+df.isnull().sum()
+df['age'] = df['age'].fillna(df['age'].mean())
+df.dropna(inplace=True)
+
+#displaying the data of those whose age is greater then 30
+df[df['age']>30]
+#displays the data of all the females
+df[df['sex']=="female"]
+#gives the mean of those who survived by sex
+df.groupby('sex')["survived"].mean()
+#the age is arranged in ascending order if it was false then it would be descending order
+df_sorted = df.sort_values(by="age",ascending=True)
+print(df_sorted.head())
+
+#adding a new column family size by adding sibling spouse and parch
+df['family_size']=df["sibsp"]+df["parch"]
+df.head()
+#the highest fare used
+print(df['fare'].max())
+#save the cleaned data
+df.to_csv("cleaned dataset.csv")
+
+VIZUALIZATION
+#
+/*import the libraries used for data vizualization which is matplotlib and seaborn.matplotlib is the core plotting library while seaborn makes vizualization easier and pretier*/
+import seaborn as sns
+import matplotlib.pyplot as plt
+#bar chat showing the percentage of people who survived. survisval percentage=65% of people survived
+survival_rate=df["survived"].value_counts(normalize=True)*100
+survival_rate.plot(kind="bar")
+plt.title("Survival percentage")
+plt.ylabel("Percentage")
+plt.show()
+#barchart of survival rate by gender more females survived than men
+sns.barplot(x="sex",y="survived",data=df)
+plt.title("Survival rate by Gender")
+plt.show()
+#boxplot of fare distribution per class
+sns.boxplot(x="pclass",y="fare",data=df)
+plt.title("Fare distribution by class")
+plt.show()
+#bar chart of survival by the size of the family.those with 4 members survived the most
+df["family_size"]=df["sibsp"]+df["parch"]
+sns.barplot(x="family_size",y="survived",data=df)
+plt.title("survival rate by family")
+plt.show()
+#histogram showing the number of people based on their age
+sns.histplot(df["age"],color="green")
+plt.title("age didtribution")
+plt.show()
+#grouped histogram of those ewho survived and those who dint based on age
+sns.histplot(data=df,x="age",hue="survived",palette=["pink","purple"])
+plt.title("age distribution by survival")
+plt.show()
+# a pie chart showing the percentage of those who survived and those who dint
+survival=df["survived"].value_counts()
+plt.pie(survival,labels=["Not Survived","Survived"],autopct="%1.1f%%",colors=["blue","green"])
+plt.title("Sutvival percentage")
+plt.show()
+#scatterplot showingthe fare used by each age
+sns.scatterplot(x="age",y="fare",data=df)
+plt.title("age v fare")
+plt.show()
+
+
+BULDING THE MODEL
+#
+from sklearn.model_selection import train_test_split 
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, confusion_matrix
+
+
+
+
+
+
+
+
+
+
+
+
+
