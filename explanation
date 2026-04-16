@@ -79,20 +79,47 @@ plt.show()
 
 
 BULDING THE MODEL
-#
-from sklearn.model_selection import train_test_split 
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score, confusion_matrix
+#import the libraries used for training and testing
+from sklearn.model_selection import train_test_split           #splits the data into training and testinng sets
+from sklearn.linear_model import LogisticRegression            #imports the logistic regeression used for classification algorithm
+from sklearn.metrics import accuracy_score, confusion_matrix   #evaluastes model performance eg accuracy
 
+#fills in missing values in the embarked column with S
+df["embarked"] = df["embarked"].fillna("S")
+#fills in missing values in the deck column with unknown
+df["deck"]=df["deck"].fillna("Unknown")
+#drops the listed columns since they are not useful in the prediction
+df.drop(["class","who","adult_male","deck","embark_town","alive"],axis=1,inplace=True)
 
+#convert categorical values into numbers /encoding
+df["sex"]=df["sex"].map({"male":0,"female":1})            #male is 0 while female is 1
+df["embarked"]=df["embarked"].map({"S":0,"C":1,"Q":2})    #s is 0, c is 1 and q is 2
+df["alone"]=df["alone"].map({True:1,False:0})             #true will take 1 while false takes 0
 
+#splitting the data
+x=df.drop("survived",axis=1) #use all the other values except survived to make predictions.input values
+y=df["survived"]             #this is what is being predicted. the answer
+#splittin the data into features fof training and testing ansd target value for training and testing
+x_train,x_test,y_train,y_test = train_test_split(x,y,test_size = 0.2,random_state = 42)    #20% is used in testing and 80% in training and data is picked randomly
 
+#model studies he training data and studies patterns 
+model=LogisticRegression(max_iter=1000)
+model.fit(x_train,y_train)
 
+#guesses the answers for the test using the trained model
+y_pred=model.predict(x_test)
 
+#determines how accurate the predicted data is
+print("accuracy:",accuracy_score(y_test,y_pred))
 
-
-
-
-
-
-
+#creates the confusion matrix with the heat map
+cm=confusion_matrix(y_test,y_pred)              
+sns.heatmap(cm,annot=True,fmt="d")
+plt.title("confusion matrics")
+plt.show()
+/*the confusion matrix shows:
+true negative - data was negativeand predicted negative
+false negative - data wa spredicted to be negative when it was a positive
+false positive - data is predicted positive when it is suppode to be negative
+true positive - data was positive and predicted positive
+*/
